@@ -14,6 +14,7 @@ class ZefyrField extends StatefulWidget {
   /// Height of this editor field.
   final double height;
   final double minHeight;
+  final double maxHeight;
   final bool expandable;
   final ZefyrController controller;
   final FocusNode focusNode;
@@ -29,6 +30,7 @@ class ZefyrField extends StatefulWidget {
     this.height,
     this.expandable = false,
     this.minHeight,
+    this.maxHeight,
     this.controller,
     this.focusNode,
     this.autofocus = false,
@@ -66,7 +68,7 @@ class _ZefyrFieldState extends State<ZefyrField> {
     
     if (widget.minHeight != null && widget.expandable) {
       child = ConstrainedBox(
-        constraints: BoxConstraints(minHeight: widget.minHeight, maxHeight: 1000),
+        constraints: BoxConstraints(minHeight: widget.minHeight, maxHeight: widget.maxHeight),
         child: child,
       );
     }
