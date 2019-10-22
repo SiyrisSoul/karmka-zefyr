@@ -7,6 +7,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
 import 'package:notus/notus.dart';
 import 'package:zefyr/util.dart';
 
@@ -449,11 +450,16 @@ class _SelectionHandleDriverState extends State<SelectionHandleDriver>
         alignment: Alignment.topLeft,
         width: interactiveRect.width,
         height: interactiveRect.height,
-        child: GestureDetector(
+        child: RawGestureDetector(
           behavior: HitTestBehavior.translucent,
-          dragStartBehavior: DragStartBehavior.start,
-          onPanStart: _handleDragStart,
-          onPanUpdate: _handleDragUpdate,
+          gestures: <Type, GestureRecognizerFactory>{
+            CustomPanGestureRecognizer: GestureRecognizerFactoryWithHandlers<
+                CustomPanGestureRecognizer>(
+              () => CustomPanGestureRecognizer(
+                  onPanDown: _handleDragStart, onPanUpdate: _handleDragUpdate),
+              (CustomPanGestureRecognizer instance) {},
+            ),
+          },
           child: Padding(
             padding: EdgeInsets.only(
               left: padding.left,
@@ -503,12 +509,13 @@ class _SelectionHandleDriverState extends State<SelectionHandleDriver>
     }
   }
 
-  void _handleDragStart(DragStartDetails details) {
-    _dragPosition = details.globalPosition;
+  bool _handleDragStart(Offset details) {
+    _dragPosition = Offset(details.dx, details.dy - 50);
+    return true;
   }
 
-  void _handleDragUpdate(DragUpdateDetails details) {
-    _dragPosition += details.delta;
+  void _handleDragUpdate(Offset details) {
+    _dragPosition = Offset(details.dx, details.dy-50);
     final globalPoint = _dragPosition;
     final paragraph = _scope.renderContext.boxForGlobalPoint(globalPoint);
     if (paragraph == null) {
@@ -605,4 +612,40 @@ class _SelectionToolbarState extends State<_SelectionToolbar> {
       child: toolbar,
     );
   }
+}
+
+class CustomPanGestureRecognizer extends OneSequenceGestureRecognizer {
+  final Function onPanDown;
+  final Function onPanUpdate;
+
+  CustomPanGestureRecognizer({
+    @required this.onPanDown,
+    @required this.onPanUpdate,
+  });
+
+  @override
+  void addPointer(PointerEvent event) {
+    if (onPanDown(event.position)) {
+      startTrackingPointer(event.pointer);
+      resolve(GestureDisposition.accepted);
+    } else {
+      stopTrackingPointer(event.pointer);
+    }
+  }
+
+  @override
+  void handleEvent(PointerEvent event) {
+    if (event is PointerMoveEvent) {
+      onPanUpdate(event.position);
+    }
+    if (event is PointerUpEvent) {
+      stopTrackingPointer(event.pointer);
+    }
+  }
+
+  @override
+  String get debugDescription => 'customPan';
+
+  @override
+  void didStopTrackingLastPointer(int pointer) {}
 }
