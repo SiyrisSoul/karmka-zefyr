@@ -67,7 +67,7 @@ class _ZefyrFieldState extends State<ZefyrField> {
     }
     
     if (widget.minHeight != null && widget.expandable) {
-      child = ConstrainedBox(
+      child = Container(
         constraints: BoxConstraints(minHeight: widget.minHeight, maxHeight: widget.maxHeight),
         child: child,
       );
