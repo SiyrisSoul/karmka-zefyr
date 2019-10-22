@@ -21,6 +21,7 @@ class ZefyrEditor extends StatefulWidget {
     @required this.controller,
     @required this.focusNode,
     this.autofocus = true,
+    this.expandable = false,
     this.mode = ZefyrMode.edit,
     this.padding = const EdgeInsets.symmetric(horizontal: 16.0),
     this.toolbarDelegate,
@@ -46,6 +47,9 @@ class ZefyrEditor extends StatefulWidget {
   ///
   /// Defaults to true. Cannot be null.
   final bool autofocus;
+
+  /// If editor should be expandable.
+  final bool expandable;
 
   /// Editing mode of this editor.
   final ZefyrMode mode;
@@ -187,6 +191,7 @@ class _ZefyrEditorState extends State<ZefyrEditor> {
       mode: widget.mode,
       padding: widget.padding,
       physics: widget.physics,
+      expandable: widget.expandable,
     );
 
     return ZefyrTheme(

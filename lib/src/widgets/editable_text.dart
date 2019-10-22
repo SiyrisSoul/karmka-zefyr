@@ -38,6 +38,7 @@ class ZefyrEditableText extends StatefulWidget {
     this.selectionControls,
     this.autofocus = true,
     this.mode = ZefyrMode.edit,
+    this.expandable = false,
     this.padding = const EdgeInsets.symmetric(horizontal: 16.0),
     this.physics,
   })  : assert(mode != null),
@@ -68,7 +69,7 @@ class ZefyrEditableText extends StatefulWidget {
   final ScrollPhysics physics;
 
   /// Toggle if field should expand instead of scroll
-  final bool expandable = false;
+  final bool expandable;
 
   /// Optional delegate for building the text selection handles and toolbar.
   ///
