@@ -13,6 +13,8 @@ class ZefyrField extends StatefulWidget {
 
   /// Height of this editor field.
   final double height;
+  final double minHeight;
+  final bool expandable;
   final ZefyrController controller;
   final FocusNode focusNode;
   final bool autofocus;
@@ -25,6 +27,8 @@ class ZefyrField extends StatefulWidget {
     Key key,
     this.decoration,
     this.height,
+    this.expandable = false,
+    this.minHeight,
     this.controller,
     this.focusNode,
     this.autofocus = false,
@@ -42,6 +46,7 @@ class _ZefyrFieldState extends State<ZefyrField> {
   @override
   Widget build(BuildContext context) {
     Widget child = ZefyrEditor(
+      expandable: widget.expandable,
       padding: EdgeInsets.symmetric(vertical: 6.0),
       controller: widget.controller,
       focusNode: widget.focusNode,
@@ -52,9 +57,16 @@ class _ZefyrFieldState extends State<ZefyrField> {
       physics: widget.physics,
     );
 
-    if (widget.height != null) {
+    if (widget.height != null && !widget.expandable) {
       child = ConstrainedBox(
         constraints: BoxConstraints.tightFor(height: widget.height),
+        child: child,
+      );
+    }
+    
+    if (widget.minHeight != null && widget.expandable) {
+      child = ConstrainedBox(
+        constraints: BoxConstraints(minHeight: widget.minHeight, maxHeight: 1000),
         child: child,
       );
     }
