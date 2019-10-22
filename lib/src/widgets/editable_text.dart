@@ -67,6 +67,9 @@ class ZefyrEditableText extends StatefulWidget {
   /// Controls physics of scrollable text field.
   final ScrollPhysics physics;
 
+  /// Toggle if field should expand instead of scroll
+  final bool expandable = false;
+
   /// Optional delegate for building the text selection handles and toolbar.
   ///
   /// If not provided then platform-specific implementation is used by default.
@@ -142,7 +145,8 @@ class _ZefyrEditableTextState extends State<ZefyrEditableText>
       body = Padding(padding: widget.padding, child: body);
     }
 
-    body = SingleChildScrollView(
+    if(widget.expandable) {
+      body = SingleChildScrollView(
       physics: widget.physics,
       controller: _scrollController,
       child: body,
@@ -154,6 +158,22 @@ class _ZefyrEditableTextState extends State<ZefyrEditableText>
     ));
 
     return Stack(fit: StackFit.expand, children: layers);
+    }
+    else {
+      final layers = <Widget>[body];
+    layers.add(Positioned.fill(
+        left: 0,
+        right: 0,
+        bottom: 0,
+        top: 0,
+        child: ZefyrSelectionOverlay(
+          controls:
+              widget.selectionControls ?? defaultSelectionControls(context),
+        )));
+
+    return Stack(fit: StackFit.passthrough, children: layers);
+    }
+    
   }
 
   @override
